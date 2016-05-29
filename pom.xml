@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>unknow.jperl</groupId>
+	<artifactId>jperl</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>nar</packaging>
+
+	<parent>
+		<groupId>unknow</groupId>
+		<artifactId>root</artifactId>
+		<version>1.1</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.maven-nar</groupId>
+				<artifactId>nar-maven-plugin</artifactId>
+				<version>3.2.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<javah>
+						<jniDirectory>src/main/c/include/</jniDirectory>
+					</javah>
+					<libraries>
+						<library>
+							<type>jni</type>
+							<linkCPP>false</linkCPP>
+							<narSystemPackage>${project.groupId}</narSystemPackage>
+						</library>
+					</libraries>
+					<c>
+						<options>
+							<option>-I/usr/lib/x86_64-linux-gnu/perl/5.22/CORE</option>
+							<option>-D_GNU_SOURCE</option>
+							<option>-D_LARGEFILE_SOURCE</option>
+							<option>-D_FILE_OFFSET_BITS=64</option>
+						</options>
+					</c>
+					<linker>
+						<sysLibs>
+							<sysLib>
+								<name>perl</name>
+							</sysLib>
+							<sysLib>
+								<name>pthread</name>
+							</sysLib>
+							<sysLib>
+								<name>crypt</name>
+							</sysLib>
+							<sysLib>
+								<name>m</name>
+							</sysLib>
+						</sysLibs>
+					</linker>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.scijava</groupId>
+			<artifactId>native-lib-loader</artifactId>
+			<version>2.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
