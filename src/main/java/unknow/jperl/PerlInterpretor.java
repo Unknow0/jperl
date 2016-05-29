@@ -25,7 +25,8 @@ public class PerlInterpretor implements ScriptEngine
 	private static native void deinit();
 
 	/** pointer to the PerlInterpreter */
-	private long perl;
+	long perl;
+
 	/** current perlcontext */
 	private PerlContext ctx;
 
@@ -52,12 +53,12 @@ public class PerlInterpretor implements ScriptEngine
 	/**
 	 * evaluate this script in this package
 	 */
-	private native Object eval(String script, String ns);
+	private native PerlScalar eval(String script, String ns);
 
 	/**
 	 * evaluate this script in this context.
 	 */
-	public Object eval(String script, ScriptContext context) throws ScriptException
+	public PerlScalar eval(String script, ScriptContext context) throws ScriptException
 		{
 		if(context instanceof PerlContext)
 			{
@@ -70,29 +71,29 @@ public class PerlInterpretor implements ScriptEngine
 			throw new ScriptException("Invalid context, must be a PerlContext.");
 		}
 
-	public Object eval(Reader reader, ScriptContext context) throws ScriptException
+	public PerlScalar eval(Reader reader, ScriptContext context) throws ScriptException
 		{
 		// TODO Auto-generated method stub
 		return null;
 		}
 
-	public Object eval(String script) throws ScriptException
+	public PerlScalar eval(String script) throws ScriptException
 		{
 		return eval(script, getContext());
 		}
 
-	public Object eval(Reader reader) throws ScriptException
+	public PerlScalar eval(Reader reader) throws ScriptException
 		{
 		return eval(reader, getContext());
 		}
 
-	public Object eval(String script, Bindings n) throws ScriptException
+	public PerlScalar eval(String script, Bindings n) throws ScriptException
 		{
 		// TODO Auto-generated method stub
 		return null;
 		}
 
-	public Object eval(Reader reader, Bindings n) throws ScriptException
+	public PerlScalar eval(Reader reader, Bindings n) throws ScriptException
 		{
 		// TODO Auto-generated method stub
 		return null;
@@ -100,20 +101,17 @@ public class PerlInterpretor implements ScriptEngine
 
 	public void put(String key, Object value)
 		{
-		// TODO Auto-generated method stub
-
+		getBindings(ScriptContext.ENGINE_SCOPE).put(key, value);
 		}
 
 	public Object get(String key)
 		{
-		// TODO Auto-generated method stub
-		return null;
+		return getBindings(ScriptContext.ENGINE_SCOPE).get(key);
 		}
 
 	public Bindings getBindings(int scope)
 		{
-		// TODO Auto-generated method stub
-		return null;
+		return ctx.getBindings(scope);
 		}
 
 	public void setBindings(Bindings bindings, int scope)
@@ -128,15 +126,17 @@ public class PerlInterpretor implements ScriptEngine
 		return null;
 		}
 
-	public ScriptContext getContext()
+	public PerlContext getContext()
 		{
 		return ctx;
 		}
 
 	public void setContext(ScriptContext context)
 		{
-		// TODO Auto-generated method stub
-
+		if(context instanceof PerlContext)
+			this.ctx=(PerlContext)context;
+		else
+			throw new IllegalArgumentException("Invalid context");
 		}
 
 	public ScriptEngineFactory getFactory()
@@ -146,9 +146,8 @@ public class PerlInterpretor implements ScriptEngine
 		}
 
 	@Override
-	protected void finalize() throws Throwable
+	protected void finalize()
 		{
-		super.finalize();
 		destroy();
 		}
 	}

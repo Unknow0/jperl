@@ -112,7 +112,7 @@ jstring j_string(JNIEnv *env, char *str)
 			res[i++]=0xD800+(c<<6)+(c&0x03<<6)+(*(s++)&0x0F<<2)+(*s&0x3F>>4);
 			res[i++]=0xDC00+(*s&0x0F<<6)+*(s++)&0x03+(*s&0x3F);
 			}
-		}
+			}
 
 	return (*env)->NewString(env, res, len);
 	}

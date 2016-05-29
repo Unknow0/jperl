@@ -62,5 +62,8 @@ JNIEXPORT jobject JNICALL Java_unknow_jperl_PerlInterpretor_eval(JNIEnv *env, jo
 	free(pa);
 	free(code);
 
+	PerlIO_flush(PerlIO_stdout());
+	fflush(stdout);
+
 	return Java_unknow_jperl_PerlScalar_create(env, perlScalar, (jlong)sv, (jlong)my_perl);
 	}

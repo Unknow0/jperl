@@ -22,5 +22,13 @@ public class PerlScalar
 		{
 		}
 
+	protected void finalize()
+		{
+		if(sv!=0)
+			destroy();
+		}
+
 	public native String toString();
+
+	native void destroy();
 	}

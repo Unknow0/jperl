@@ -13,6 +13,8 @@ public class PerlContext implements ScriptContext
 	/** interpretor linked to this context */
 	private PerlInterpretor perl;
 
+	private PerlBinding bind;
+
 	/** the package of this context */
 	private String perlPackage;
 
@@ -20,6 +22,7 @@ public class PerlContext implements ScriptContext
 		{
 		this.perl=perl;
 		this.perlPackage=perlPackage;
+		bind=new PerlBinding(this);
 		}
 
 	public PerlInterpretor getInterpretor()
@@ -40,8 +43,7 @@ public class PerlContext implements ScriptContext
 
 	public Bindings getBindings(int scope)
 		{
-		// TODO Auto-generated method stub
-		return null;
+		return ScriptContext.ENGINE_SCOPE==scope?bind:null;
 		}
 
 	public void setAttribute(String name, Object value, int scope)
