@@ -1,6 +1,7 @@
 package unknow.jperl;
 
 import java.io.*;
+import java.util.*;
 
 import javax.script.*;
 
@@ -89,14 +90,12 @@ public class PerlInterpretor implements ScriptEngine
 
 	public PerlScalar eval(String script, Bindings n) throws ScriptException
 		{
-		// TODO Auto-generated method stub
-		return null;
+		throw new ScriptException("unsuported");
 		}
 
 	public PerlScalar eval(Reader reader, Bindings n) throws ScriptException
 		{
-		// TODO Auto-generated method stub
-		return null;
+		throw new ScriptException("unsuported");
 		}
 
 	public void put(String key, Object value)
@@ -116,14 +115,12 @@ public class PerlInterpretor implements ScriptEngine
 
 	public void setBindings(Bindings bindings, int scope)
 		{
-		// TODO Auto-generated method stub
-
+		throw new RuntimeException("unsuported");
 		}
 
 	public Bindings createBindings()
 		{
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("unsuported");
 		}
 
 	public PerlContext getContext()
@@ -149,5 +146,28 @@ public class PerlInterpretor implements ScriptEngine
 	protected void finalize()
 		{
 		destroy();
+		}
+
+	@SuppressWarnings("unchecked")
+	public PerlScalar toPerl(Object o)
+		{
+		if(o instanceof Map)
+			return new PerlHash(this, (Map<String,?>)o);
+		if(o instanceof Collection)
+			return new PerlArray(this, (Collection<?>)o);
+		else if(o instanceof Long)
+			return PerlScalar.createIV(perl, (Long)o);
+		else if(o instanceof Integer)
+			return PerlScalar.createIV(perl, (Integer)o);
+		else if(o instanceof Short)
+			return PerlScalar.createIV(perl, (Short)o);
+		else if(o instanceof Byte)
+			return PerlScalar.createIV(perl, (Byte)o);
+		else if(o instanceof Float)
+			return PerlScalar.createNV(perl, (Float)o);
+		else if(o instanceof Double)
+			return PerlScalar.createNV(perl, (Float)o);
+		else
+			return PerlScalar.createPV(perl, o.toString());
 		}
 	}

@@ -8,6 +8,7 @@ import javax.script.*;
 /**
  * contain a perl context.
  */
+@SuppressWarnings("restriction")
 public class PerlContext implements ScriptContext
 	{
 	/** interpretor linked to this context */
@@ -22,7 +23,7 @@ public class PerlContext implements ScriptContext
 		{
 		this.perl=perl;
 		this.perlPackage=perlPackage;
-		bind=new PerlBinding(this);
+		bind=new PerlBinding(perlPackage, perl);
 		}
 
 	public PerlInterpretor getInterpretor()

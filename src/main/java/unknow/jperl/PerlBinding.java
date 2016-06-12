@@ -4,78 +4,91 @@ import java.util.*;
 
 import javax.script.*;
 
+@SuppressWarnings("restriction")
 public class PerlBinding implements Bindings
 	{
-	private PerlContext ctx;
-	private Map<String,PerlScalar> binding;
+	private String pack;
+	private PerlInterpretor perl;
+	private PerlHash stash;
 
-	// TODO cache declaration
-//	private long len;
-//	private long alloc;
-//	private long decl;
-//
-//	private native void create();
-
-	public PerlBinding(PerlContext ctx)
+	PerlBinding(String pack, PerlInterpretor perl)
 		{
-		this.ctx=ctx;
-		this.binding=new HashMap<String,PerlScalar>();
-//		create();
+		this.pack=pack;
+		this.perl=perl;
+		stash=create(perl.perl, pack);
 		}
+
+	private native PerlHash create(long perl, String pack);
 
 	public int size()
 		{
-		return binding.size();
+		return stash.size();
 		}
 
 	public boolean isEmpty()
 		{
-		return binding.isEmpty();
+		return size()==0;
 		}
 
 	public boolean containsValue(Object value)
-		{
-		return binding.containsValue(value);
+		{ // TODO
+//		return binding.containsValue(value);
+		return false;
 		}
 
-	public void clear()
-		{
-		for(PerlScalar p:binding.values())
-			p.destroy();
-		binding.clear();
-		}
+	public native void clear();
 
 	public Set<String> keySet()
 		{
-		return binding.keySet();
+		return null; // TODO
+//		String[] keys=keys();
+//		Set<String> set=new HashSet<String>((int)(keys.length*1.33)+1);
+//		for(int i=0; i<keys.length; i++)
+//			set.add(keys[i]);
+//		return set;
 		}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Collection<Object> values()
-		{
-		return (Collection)binding.values();
+		{ // TODO
+		return null;
 		}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Set<java.util.Map.Entry<String,Object>> entrySet()
-		{
-		return (Set)binding.entrySet();
+		{ // TODO
+		return null;
 		}
+
+	public native void define(long perl, long hv, String name, long v);
 
 	public Object put(String name, Object value)
 		{
-		String v;
-		if(value instanceof CharSequence)
-			v="'"+value.toString().replaceAll("'", "\\'")+"'";
+		PerlScalar s=perl.toPerl(value);
+		PerlGlob gv=(PerlGlob)stash.get(name);
+		if(gv==null)
+			{
+			PerlScalar g=PerlScalar.createUndef(perl.perl);
+			define(perl.perl, stash.sv, name, g.sv);
+			stash.put(name, g);
+			gv=(PerlGlob)stash.get(name);
+			}
+
+		PerlScalar old;
+		if(s instanceof PerlHash)
+			{
+			old=gv.hash();
+			gv.setHash((PerlHash)s);
+			}
+		else if(s instanceof PerlArray)
+			{
+			old=gv.array();
+			gv.setArray((PerlArray)s);
+			}
 		else
-			v=String.valueOf(value);
-		// TODO map/list/array
-		PerlScalar ps=define(ctx.getInterpretor().perl, ctx.getPackage(), name, v);
-		if(ps!=null)
-			ps=binding.put(name, ps);
-		if(ps!=null)
-			ps.destroy();
-		return null;
+			{
+			old=gv.scalar();
+			gv.setScalar(s);
+			}
+		return old;
 		}
 
 	public void putAll(Map<? extends String,? extends Object> toMerge)
@@ -84,25 +97,16 @@ public class PerlBinding implements Bindings
 			put(e.getKey(), e.getValue());
 		}
 
-	public boolean containsKey(Object key)
+	public native boolean containsKey(Object key);
+
+	public PerlScalar get(Object key)
 		{
-		return binding.containsKey(key);
+		return stash.get((String)key);
 		}
 
-	public Object get(Object key)
-		{
-		return binding.get(key);
-		}
-
-	public Object remove(Object key)
-		{
-		PerlScalar ps=binding.get(key);
-		if(ps!=null)
-			ps.destroy();
-		return null;
-		}
+	public native Object remove(Object key);
 
 //	private native void undef(PerlScalar pv);
 
-	private native PerlScalar define(long perl, String pack, String name, String v);
+	private native PerlScalar define(long perl, String name, String v);
 	}

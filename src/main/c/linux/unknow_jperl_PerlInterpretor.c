@@ -3,21 +3,13 @@
 #include "jperl.h"
 #include <string.h>
 
-jclass perlScalar;
-jfieldID perlScalar_sv;
-jfieldID perlScalar_perl;
-jfieldID perlInterpretor_perl;
-
 JNIEXPORT void JNICALL Java_unknow_jperl_PerlInterpretor_init(JNIEnv *env, jclass class)
 	{
 	int argc=0;
 	char **argv=NULL;
 	char **envp=NULL;
 
-	perlScalar=(*env)->FindClass(env, "unknow/jperl/PerlScalar");
-	perlInterpretor_perl=(*env)->GetFieldID(env, class, "perl", "J");
-	perlScalar_sv=(*env)->GetFieldID(env, perlScalar, "sv", "J");
-	perlScalar_perl=(*env)->GetFieldID(env, perlScalar, "perl", "J");
+	jperl_init(env, class);
 
 	PERL_SYS_INIT3(&argc,&argv,&envp);
 	}
@@ -65,5 +57,5 @@ JNIEXPORT jobject JNICALL Java_unknow_jperl_PerlInterpretor_eval(JNIEnv *env, jo
 	PerlIO_flush(PerlIO_stdout());
 	fflush(stdout);
 
-	return Java_unknow_jperl_PerlScalar_create(env, perlScalar, (jlong)sv, (jlong)my_perl);
+	return jperl_create_scalar(env, my_perl, sv);
 	}
