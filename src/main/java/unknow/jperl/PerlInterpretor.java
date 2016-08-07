@@ -8,23 +8,6 @@ import javax.script.*;
 @SuppressWarnings("restriction")
 public class PerlInterpretor implements ScriptEngine
 	{
-	static
-		{
-		Runtime.getRuntime().addShutdownHook(new Thread()
-			{
-				public void run()
-					{
-					deinit();
-					}
-			});
-		NarSystem.loadLibrary();
-		init();
-		}
-
-	private static native void init();
-
-	private static native void deinit();
-
 	/** pointer to the PerlInterpreter */
 	long perl;
 
@@ -36,15 +19,16 @@ public class PerlInterpretor implements ScriptEngine
 	 */
 	public PerlInterpretor()
 		{
-		create();
+		create(PerlBootstrap.bootstrap);
 		// TODO generate package
 		ctx=new PerlContext(this, "unknow::jperl");
 		}
 
 	/**
 	 * create and initialize native PerlInterpreter
+	 * @param bootstrapfile
 	 */
-	private native void create();
+	private native void create(String bootstrapfile);
 
 	/**
 	 * destroy native PerlInterpreter
@@ -54,12 +38,12 @@ public class PerlInterpretor implements ScriptEngine
 	/**
 	 * evaluate this script in this package
 	 */
-	private native PerlScalar eval(String script, String ns);
+	private native Object[] eval(String script, String ns);
 
 	/**
 	 * evaluate this script in this context.
 	 */
-	public PerlScalar eval(String script, ScriptContext context) throws ScriptException
+	public Object[] eval(String script, ScriptContext context) throws ScriptException
 		{
 		if(context instanceof PerlContext)
 			{
@@ -72,28 +56,27 @@ public class PerlInterpretor implements ScriptEngine
 			throw new ScriptException("Invalid context, must be a PerlContext.");
 		}
 
-	public PerlScalar eval(Reader reader, ScriptContext context) throws ScriptException
-		{
-		// TODO Auto-generated method stub
-		return null;
-		}
-
-	public PerlScalar eval(String script) throws ScriptException
-		{
-		return eval(script, getContext());
-		}
-
-	public PerlScalar eval(Reader reader) throws ScriptException
-		{
-		return eval(reader, getContext());
-		}
-
-	public PerlScalar eval(String script, Bindings n) throws ScriptException
+	public Object[] eval(Reader reader, ScriptContext context) throws ScriptException
 		{
 		throw new ScriptException("unsuported");
 		}
 
-	public PerlScalar eval(Reader reader, Bindings n) throws ScriptException
+	public Object[] eval(String script) throws ScriptException
+		{
+		return eval(script, getContext());
+		}
+
+	public Object[] eval(Reader reader) throws ScriptException
+		{
+		return eval(reader, getContext());
+		}
+
+	public Object[] eval(String script, Bindings n) throws ScriptException
+		{
+		throw new ScriptException("unsuported");
+		}
+
+	public Object[] eval(Reader reader, Bindings n) throws ScriptException
 		{
 		throw new ScriptException("unsuported");
 		}
@@ -155,6 +138,8 @@ public class PerlInterpretor implements ScriptEngine
 			return new PerlHash(this, (Map<String,?>)o);
 		if(o instanceof Collection)
 			return new PerlArray(this, (Collection<?>)o);
+		if(o.getClass().isArray())
+			return new PerlArray(this, (Object[])o);
 		else if(o instanceof Long)
 			return PerlScalar.createIV(perl, (Long)o);
 		else if(o instanceof Integer)

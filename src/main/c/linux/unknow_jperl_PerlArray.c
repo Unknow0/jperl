@@ -20,7 +20,7 @@ JNIEXPORT jint JNICALL Java_unknow_jperl_PerlArray_size(JNIEnv *env, jobject thi
 	{
 	PerlInterpreter *my_perl=(PerlInterpreter*)(*env)->GetLongField(env, this, perlScalar_perl);
 	AV *av=(AV*)(*env)->GetLongField(env, this, perlScalar_sv);
-	return av_top_index(av)+1;
+	return (jint)av_top_index(av)+1;
 	}
 
 JNIEXPORT void JNICALL Java_unknow_jperl_PerlArray_push(JNIEnv *env, jobject this, jobject scalar)

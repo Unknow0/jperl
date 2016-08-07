@@ -13,7 +13,7 @@ JNIEXPORT jint JNICALL Java_unknow_jperl_PerlHash_size(JNIEnv *env, jobject this
 	{
 	HV *hv=(HV*)(*env)->GetLongField(env, this, perlScalar_sv);
 	PerlInterpreter *my_perl=(PerlInterpreter*)(*env)->GetLongField(env, this, perlScalar_perl);
-	return HvUSEDKEYS(hv);
+	return (jint)HvUSEDKEYS(hv);
 	}
 
 JNIEXPORT void JNICALL Java_unknow_jperl_PerlHash_clear(JNIEnv *env, jobject this)

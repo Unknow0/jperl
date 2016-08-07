@@ -7,19 +7,33 @@ import java.util.*;
  */
 public class PerlHash extends PerlScalar
 	{
-	protected PerlHash(long perl, long hv)
-		{
-		super(perl, hv);
-		}
-
-	public PerlHash(PerlInterpretor perl, Map<String,?> o)
+	/**
+	 * create an empty perlHash
+	 */
+	public PerlHash(PerlInterpretor perl)
 		{
 		create(perl.perl);
+		}
+
+	/**
+	 * create a perlHash that copy this map
+	 */
+	public PerlHash(PerlInterpretor perl, Map<String,?> o)
+		{
+		this(perl);
 		for(Map.Entry<String,?> e:o.entrySet())
 			{
 			PerlScalar sv=perl.toPerl(e.getValue());
 			put(e.getKey(), sv);
 			}
+		}
+
+	/**
+	 * create a perlHash with these pointer
+	 */
+	protected PerlHash(long perl, long hv)
+		{
+		super(perl, hv);
 		}
 
 	private native void create(long perl);

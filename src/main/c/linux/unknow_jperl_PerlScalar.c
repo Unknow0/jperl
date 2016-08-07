@@ -47,10 +47,13 @@ JNIEXPORT jstring JNICALL Java_unknow_jperl_PerlScalar_ref(JNIEnv *env, jobject 
 JNIEXPORT jobject JNICALL Java_unknow_jperl_PerlScalar_deref(JNIEnv *env, jobject this)
 	{
 	SV *sv=(SV*)(*env)->GetLongField(env, this, perlScalar_sv);
+	SV *s;
 	PerlInterpreter *my_perl=(PerlInterpreter*)(*env)->GetLongField(env, this, perlScalar_perl);
 	if(!SvROK(sv))
 		return NULL;
-	return jperl_create_scalar(env, my_perl, SvRV(sv));
+	s=SvRV(sv);
+	SvREFCNT_inc_void_NN(s);
+	return jperl_create_scalar(env, my_perl, s);
 	}
 
 JNIEXPORT jint JNICALL Java_unknow_jperl_PerlScalar_type(JNIEnv *env, jobject this)

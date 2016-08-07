@@ -7,10 +7,31 @@ import java.util.*;
  */
 public class PerlArray extends PerlScalar
 	{
-	public PerlArray(PerlInterpretor perl, Collection<?> col)
+	/**
+	 * create an empty array
+	 */
+	public PerlArray(PerlInterpretor perl)
 		{
 		create(perl.perl);
+		}
+
+	/**
+	 * create an array witch copy the collection
+	 */
+	public PerlArray(PerlInterpretor perl, Collection<?> col)
+		{
+		this(perl);
 		for(Object o:col)
+			push(perl.toPerl(o));
+		}
+
+	/**
+	 * create an array witch copy this array
+	 */
+	public PerlArray(PerlInterpretor perl, Object[] array)
+		{
+		this(perl);
+		for(Object o:array)
 			push(perl.toPerl(o));
 		}
 

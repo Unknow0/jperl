@@ -15,6 +15,23 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${project.basedir}/build.property</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>com.github.maven-nar</groupId>
 				<artifactId>nar-maven-plugin</artifactId>
 				<version>3.2.3</version>
@@ -31,8 +48,12 @@
 						</library>
 					</libraries>
 					<c>
+						<includePaths>
+							<includePath>${perl.include}</includePath>
+						</includePaths>
 						<options>
-							<option>-I/usr/lib/x86_64-linux-gnu/perl/5.22/CORE</option>
+							<option>-g</option>
+							<option>-O0</option>
 							<option>-D_GNU_SOURCE</option>
 							<option>-D_LARGEFILE_SOURCE</option>
 							<option>-D_FILE_OFFSET_BITS=64</option>
